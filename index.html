@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truth Table Generator - Pro Edition</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf library for PDF download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #07090e;
+            --card-bg: rgba(17, 24, 39, 0.85);
+            --border-color: rgba(59, 130, 246, 0.25);
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            padding: 18px 28px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Animated Heading */
+        .animated-heading {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShimmer 6s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradientShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .user-profile-badge-small {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: #60a5fa;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile-badge-small:hover {
+            background: rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 15px var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        .user-profile-badge-small img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            padding: 35px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+            margin-bottom: 25px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(31, 41, 55, 0.8);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(55, 65, 81, 0.9);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"], input[type="number"], input[type="email"], select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        select option {
+            background: #111827;
+            color: white;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #111827;
+            border: 1px solid var(--border-color);
+            padding: 35px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .close-btn:hover {
+            color: white;
+        }
+
+        /* Truth Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        th, td {
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            padding: 14px;
+            text-align: center;
+        }
+
+        th {
+            background-color: rgba(30, 58, 138, 0.6);
+            color: #60a5fa;
+            font-weight: 700;
+        }
+
+        td {
+            background-color: rgba(17, 24, 39, 0.6);
+            color: #e2e8f0;
+        }
+
+        .expression-box {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #60a5fa;
+            background: rgba(59, 130, 246, 0.08);
+            padding: 12px 18px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1 class="animated-heading"><i class="fa-solid fa-microchip"></i> Truth Table Generator</h1>
+            <div id="profile-display-area">
+                <div class="user-profile-badge-small" onclick="openProfileModal(false)">
+                    <i class="fa-solid fa-user-circle"></i>
+                    <span>Create Profile</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero / Home Section -->
+        <section class="card hero-section">
+            <h2 style="margin-bottom: 12px; color: #fff;">Welcome to Pro Logic Engine</h2>
+            <p style="margin-bottom: 25px; color: var(--text-muted);">Easily generate precise, professional truth tables for any complex boolean expressions.</p>
+            <div style="display: flex; gap: 12px;">
+                <button id="get-started-btn" class="btn"><i class="fa-solid fa-play"></i> Get Started</button>
+                <button id="learn-more-btn" class="btn btn-secondary"><i class="fa-solid fa-circle-info"></i> Learn More</button>
+            </div>
+        </section>
+
+        <!-- Learn More Section -->
+        <section id="learn-more-section" class="card hidden">
+            <h2 style="margin-bottom: 12px; color: #fff;">About the App</h2>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">This application evaluates logical boolean statements using precise mathematical calculations, giving you instant truth tables.</p>
+            <button id="back-to-home-btn" class="btn btn-secondary">Back</button>
+        </section>
+
+        <!-- Configuration Section -->
+        <section id="config-section" class="card hidden">
+            <h2 style="margin-bottom: 20px; color: #fff;">Configure Variables & Expression</h2>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="input-count">Number of Inputs (Variables):</label>
+                    <input type="number" id="input-count" min="1" max="5" value="3">
+                </div>
+                <div class="form-group">
+                    <label for="output-count">Number of Outputs:</label>
+                    <input type="number" id="output-count" min="1" max="1" value="1">
+                </div>
+            </div>
+
+            <button id="setup-vars-btn" class="btn btn-secondary" style="margin-bottom: 20px;">Setup Variables</button>
+
+            <div id="dynamic-inputs-container" class="form-group hidden">
+                <label>Input Variable Names:</label>
+                <div id="input-fields-list" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+            </div>
+
+            <div id="dynamic-outputs-container" class="form-group hidden">
+                <label>Output Variable Name:</label>
+                <div id="output-fields-list" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="boolean-expression">Boolean Expression (e.g., (A or B) and (B or C)):</label>
+                <input type="text" id="boolean-expression" placeholder="Enter expression using and, or, not">
+            </div>
+
+            <div class="action-buttons">
+                <button id="generate-btn" class="btn"><i class="fa-solid fa-bolt"></i> Generate Truth Table</button>
+                <button id="config-back-btn" class="btn btn-secondary">Back</button>
+            </div>
+        </section>
+
+        <!-- Result Section -->
+        <section id="result-section" class="card hidden">
+            <div id="pdf-content" style="background: #0f172a; padding: 25px; border-radius: 12px; color: #fff;">
+                <h2 style="margin-bottom: 15px; color: #60a5fa;">Truth Table Result</h2>
+                <div id="expression-display-box" class="expression-box"></div>
+                <div id="truth-table-container"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="download-pdf-btn" class="btn"><i class="fa-solid fa-download"></i> Download PDF Report</button>
+                <button id="result-back-btn" class="btn btn-secondary">Back</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="close-modal-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            <h2 id="modal-title" style="margin-bottom: 20px; color: #fff;">Create Profile</h2>
+            <form id="profile-form">
+                <div class="form-group">
+                    <label for="profile-name">Name:</label>
+                    <input type="text" id="profile-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="profile-age">Age:</label>
+                    <input type="number" id="profile-age">
+                </div>
+                <div class="form-group">
+                    <label for="profile-gender">Gender:</label>
+                    <select id="profile-gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="profile-email">Email:</label>
+                    <input type="email" id="profile-email">
+                </div>
+                <div class="form-group">
+                    <label for="profile-photo">Profile Photo:</label>
+                    <input type="file" id="profile-photo" accept="image/*">
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Save Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
